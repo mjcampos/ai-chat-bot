@@ -4,8 +4,6 @@ import { useState, useEffect, useRef, type ChangeEvent, type KeyboardEvent } fro
 import "./page.css";
 import { useRouter } from "next/navigation";
 import {v4 as uuidv4} from "uuid";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
 import { OpenAIChat } from "../../../lib/TalkAPI";
 
 export type messagesType = {
@@ -18,10 +16,6 @@ type chatsType = {
     id: string;
     displayId: string;
     messages: Array<messagesType>;
-}
-
-type EmojiSelection = {
-    native: string;
 }
 
 type OpenAIContentItem = {
@@ -47,7 +41,6 @@ export default function ChatPage() {
 
     const [messages, setMessages] = useState<Array<messagesType>>(chats[0]?.messages || []);
     const [isTyping, setIsTyping] = useState<boolean>(false);
-    const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     
     const router = useRouter();
     const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -89,10 +82,6 @@ export default function ChatPage() {
             behavior: "smooth"
         });
     }, [messages]);
-
-    const handleEmojiSelect = (emoji: EmojiSelection) => {
-        setInputValue(prevInput => prevInput + emoji.native);
-    }
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -264,17 +253,6 @@ export default function ChatPage() {
                 </div>
 
                 <form className='msg-form' onSubmit={(e) => e.preventDefault()}>
-                    <i className="fa-solid fa-face-smile emoji" onClick={() => setShowEmojiPicker(prev => !prev)}/>
-
-                        {showEmojiPicker && (
-                            <div className="picker">
-                                <Picker
-                                    data={data}
-                                    onEmojiSelect={handleEmojiSelect}
-                                />
-                            </div>
-                        )}
-
                     <input 
                         type="text" 
                         className='msg-input' 
@@ -282,7 +260,6 @@ export default function ChatPage() {
                         value={inputValue}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
-                        onFocus={() => setShowEmojiPicker(false)}
                     />
 
                     <i className="fa-solid fa-paper-plane" onClick={sendMessage}/>
